@@ -4,19 +4,21 @@ import docx
 
 
 def reading_time():
-    path = ask_path()
-    minutes, secs = compute_time(path)
+    path = __ask_path__()
+    minutes, secs = __compute_time__(path)
     print("reading time for this article is:\t" + str(minutes) + " minutes and " + str(secs) + " seconds")
 
-def ask_path():
+
+def __ask_path__():
     # Using fileinput.input() method
     exists = False
-    path=""
-    while exists == False:
-        path, exists = check_file()
+    path = ""
+    while not exists:
+        path, exists = __check_file__()
     return path
 
-def check_file():
+
+def __check_file__():
     path = input("Enter Filename: ")
     exists = True
     if os.path.isfile(path):
@@ -30,7 +32,8 @@ def check_file():
         exists = False
     return path, exists
 
-def getWordNumbTxt(path):
+
+def __getWordNumbTxt__(path):
     with open(path, 'r', encoding='utf-8', errors="ignore") as inF:
         number_of_words = 0
         for line in inF:
@@ -38,7 +41,8 @@ def getWordNumbTxt(path):
             number_of_words += len(word_list)
     return number_of_words
 
-def getWordNumbDocx(path):
+
+def __getWordNumbDocx__(path):
     doc = docx.Document(path)
     number_of_words = 0
     for para in doc.paragraphs:
@@ -47,9 +51,10 @@ def getWordNumbDocx(path):
         number_of_words += len(word_list)
     return number_of_words
 
-def getWordNumbPDF(path):
+
+def __getWordNumbPDF__(path):
     # creating an object
-    file = open(path, 'rb')#, encoding = 'utf-8', errors="ignore")
+    file = open(path, 'rb')  # , encoding = 'utf-8', errors="ignore")
     # creating a pdf reader object
     fileReader = PyPDF2.PdfFileReader(file)
     number_of_words = 0
@@ -60,33 +65,37 @@ def getWordNumbPDF(path):
     file.close()
     return number_of_words
 
-def get_number_of_words(path):
-    if (path.endswith(".txt")):
-        number_of_words = getWordNumbTxt(path)
-    elif(path.endswith(".docx")):
-        number_of_words = getWordNumbDocx(path)
-    elif(path.endswith(".pdf")):
-        number_of_words = getWordNumbPDF(path)
+
+def __get_number_of_words__(path):
+    if path.endswith(".txt"):
+        number_of_words = __getWordNumbTxt__(path)
+    elif path.endswith(".docx"):
+        number_of_words = __getWordNumbDocx__(path)
+    elif path.endswith(".pdf"):
+        number_of_words = __getWordNumbPDF__(path)
     return number_of_words
 
-def compute_time(path):
-    number_of_words = get_number_of_words(path)
-    #200 = average number of words that can be read in a minute
-    dvd = number_of_words/200
-    minutes = compute_minutes(dvd)
-    secs = compute_seconds(dvd)
+
+def __compute_time__(path):
+    number_of_words = __get_number_of_words__(path)
+    # 200 = average number of words that can be read in a minute
+    dvd = number_of_words / 200
+    minutes = __compute_minutes__(dvd)
+    secs = __compute_seconds__(dvd)
     return minutes, secs
 
-def compute_minutes(dvd):
+
+def __compute_minutes__(dvd):
     return round(dvd)
 
-def compute_seconds(dvd):
+
+def __compute_seconds__(dvd):
     secs = round((dvd * 60) % 1, 3)
     return int(str(secs)[2:])
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     reading_time()
 
-#https://kodify.net/hugo/strings/reading-time-text/
-#https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
+# https://kodify.net/hugo/strings/reading-time-text/
+# https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
