@@ -10,7 +10,6 @@ def reading_time():
 
 
 def __ask_path__():
-    # Using fileinput.input() method
     exists = False
     path = ""
     while not exists:
