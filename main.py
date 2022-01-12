@@ -100,14 +100,23 @@ if __name__ == '__main__':
         import docx
         reading_time()
     except ModuleNotFoundError:
+        print("Since it is the first execution of the program you need to install the following libraries in order to correctly run ARTI:\n")
+
+        with open("requirements.txt", 'r') as f:
+            lines = f.readlines()
+            print(lines)
+        choice = input("\nDo you want to proceed with the installation? Type 'Y' to proceed or type any other key to close the process:\t").lower()
+        if choice == 'y':
         # implement pip as a subprocess:
-        subprocess.run(["pip", "install", "-r", "requirements.txt"])
-        import os.path
-        import PyPDF2
-        import docx
-        reading_time()
 
-
+            subprocess.run(["pip", "install", "-r", "requirements.txt"], stdout=subprocess.DEVNULL)#logs will be hidden
+            import os.path
+            import PyPDF2
+            import docx
+            print("\nPackages correctly installed!\n")
+            reading_time()
+        else:
+            print("\nBye! ", "\U0001F984")
 #FONTI
 # https://kodify.net/hugo/strings/reading-time-text/
 # https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
