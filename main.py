@@ -1,6 +1,6 @@
-import os.path
-import PyPDF2
-import docx
+import sys
+import subprocess
+
 
 
 def reading_time():
@@ -94,7 +94,19 @@ def __compute_seconds__(dvd):
 
 
 if __name__ == '__main__':
-    reading_time()
+    try:
+        import os.path
+        import PyPDF2
+        import docx
+        reading_time()
+    except ModuleNotFoundError:
+        # implement pip as a subprocess:
+        subprocess.run(["pip", "install", "-r", "requirements.txt"])
+        import os.path
+        import PyPDF2
+        import docx
+        reading_time()
+
 
 #FONTI
 # https://kodify.net/hugo/strings/reading-time-text/
