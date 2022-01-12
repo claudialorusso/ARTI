@@ -96,5 +96,6 @@ def __compute_seconds__(dvd):
 if __name__ == '__main__':
     reading_time()
 
+#FONTI
 # https://kodify.net/hugo/strings/reading-time-text/
 # https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
