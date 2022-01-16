@@ -118,6 +118,7 @@ def __get_number_of_words__(path):
     except:
         print("FILE ERROR: maybe it is protected by password? Please enter a NON protected file.")
         reading_time()
+        input("\npress any key to exit.")
         sys.exit()
     return number_of_words
 
@@ -165,6 +166,7 @@ if __name__ == '__main__':
         import PyPDF2
         import docx
         reading_time()
+        input("\npress any key to exit.")
     except ModuleNotFoundError:
         print("Since it is the first execution of the program you need to install the following libraries in order to correctly run ARTI:\n")
         with open("requirements.txt", 'r') as f:
@@ -180,5 +182,7 @@ if __name__ == '__main__':
             import docx
             print("\nPackages correctly installed!\n")
             reading_time()
+            input("\npress any key to exit.")
         else:
             print("\nBye! ", "\U0001F984")
+            input("\npress any key to exit.")
