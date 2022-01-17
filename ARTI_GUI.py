@@ -13,64 +13,177 @@ import subprocess
 # https://kodify.net/hugo/strings/reading-time-text/
 # https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
 
-def launch():
-    next_btn.configure(state = "disabled" if not accept_terms.get() else "normal")
-
-def bar():
+class Installation:
     """
-
-    :return:
+    Manages the installation GUI.
+    If it is the first execution OR the user doesn't dispose of the needed libs
+    asks him if he wants to download them, in which case the program proceeds
+    with the installation. Else, he can easly close the window.
     """
-    #disable checkbox and next buttons
-    check_btn.configure(state=DISABLED)
-    next_btn.configure(state=DISABLED)
+    def __init__(self):
+        # ------------------------------- Installation root creation
+        self.__installation_root__ = Tk()
+        # -----------------logo
+        self.__logo__ = PhotoImage(file="utils/images/arti2.png")
+        # -----------------logo minimized
+        self.__mini_logo__ = PhotoImage(file="utils/images/arti_medium.png")
+        #-----------------ico
+        self.__ico__ = "utils/images/arti2.ico"
+        #set root icon
+        self.__set_ico__()
+        #set root title
+        self.__title__ = "Program Installation"
+        self.__set_title__(self.__title__)
+        #---------------------------------- Master installation frame creation
+        self.__master_frame__ = Frame(self.__installation_root__)
+        self.__master_frame__.grid(row=0, column =0)
+        #---------------------------------- Dialog Frame creation
+        self.__up_dialog_frame__ = Frame(self.__master_frame__)
+        self.__up_dialog_frame__.grid(row=0, sticky= W, padx=(5))
+        #---------------------------------- Image installation lbl
+        self.__image_lbl__ = Label(self.__up_dialog_frame__, image = self.__mini_logo__, justify="center")
+        self.__image_lbl__.grid(row=0, column=0, padx=(10), pady=10)
+        #---------------------------------- Welcome installation Frame creation
+        self.__welcome_frame__ = Frame(self.__up_dialog_frame__)
+        self.__welcome_frame__.grid(row=0, column =1, sticky=W, padx=(5))
+        #---------------------------------- Welcome installation lbl
+        self.__welcome_lbl__ = Label(self.__welcome_frame__, text='Welcome to aRTi!', font=("Gabriola", 30, "bold"), justify="left")
+        self.__welcome_lbl__.grid(row=0, column = 1, sticky =N + W, pady=5)
+        #---------------------------------- Instruction installation lbl
+        self.__instruction_lbl__ = Label(self.__welcome_frame__, justify ="left", text='Since it is the first execution of the program you need to download \nand install the following libraries in order to correctly run aRTi.\n\nPlease make sure that your device has network connectivity.', font=("Times New Roman", 12))
+        self.__instruction_lbl__.grid(row=1, column = 1, sticky =N + W, pady=10)
+        # ---------------------------------------------------- TEXTBOX Frame
+        self.__box_frame__ = LabelFrame(self.__master_frame__, text="The following packages will be installed:", padx=5, pady=5)
+        self.__box_frame__.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky=E + W + N + S)
 
-    #download and install packages
-    progress["value"] = 5
-    installation_root.update_idletasks()
-    # implement pip as a subprocess:
-    subprocess.run(["pip3", "install", "-r", "requirements.txt"], shell=True, capture_output=True)
-    progress["value"] = 55
-    installation_root.update_idletasks()
-    #time.sleep(0.1)
-    import os.path
-    progress["value"] = 76
-    installation_root.update_idletasks()
-    import PyPDF2
-    progress["value"] = 87
-    installation_root.update_idletasks()
-    import docx
-    progress["value"] = 100
-    installation_root.update_idletasks()
+        self.__installation_root__.columnconfigure(0, weight=1)
+        self.__installation_root__.rowconfigure(1, weight=1)
 
-    #root = Tk()
-    installation_root.destroy()
+        self.__box_frame__.rowconfigure(0, weight=1)
+        self.__box_frame__.columnconfigure(0, weight=1)
 
+        # Create the textbox widget
+        self.__txt_box__ = scrolledtext.ScrolledText(self.__box_frame__, width=40, height=10, font=("Times New Roman", 12))
+        self.__txt_box__.grid(row=0, column=0, sticky=E + W + N + S)
+        self.__txt_box__.insert(INSERT, self.__get_packages__())
+        self.__txt_box__.configure(state="disabled")
 
+        #-----------------------------------------------Accept frame creation
+        self.__accept_frame__ = Frame(self.__master_frame__)
+        self.__accept_frame__.grid(row=2, padx=(10), pady=10, sticky = W)
 
+        #accept installation boolean variable
+        self.__accept_terms__ = BooleanVar()
 
-    """
-    
-    progress['value']=20
-    root.update_idletasks()
-    time.sleep(1)
-    progress['value']=50
-    root.update_idletasks()
-    time.sleep(1)
-    progress['value']=80
-    root.update_idletasks()
-    time.sleep(1)
-    progress['value']=100
-    """
+        # check button
+        self.__check_btn__ = Checkbutton(self.__accept_frame__, text="I accept to download and install the previous packages. Click the 'Next' button to continue", variable=self.__accept_terms__, onvalue=True, offvalue=False, command = self.__manage_next_btn__)
+        self.__check_btn__.grid(row = 0, sticky = W)
 
-def get_packages():
-    pack = "\n"
-    with open("requirements.txt", 'r') as f:
-        for line in f:
-            pack = pack + line + "\n"
-    return pack
+        #next button
+        self.__next_btn__ = Button(self.__accept_frame__, text='Next', state = DISABLED, width=10, command = self.__bar__)
+        self.__next_btn__.grid(row=2, sticky=E + S, pady=10)
 
+        #progress bar
+        self.__progress__ = ttk.Progressbar(self.__accept_frame__, orient=HORIZONTAL, length=600, mode ="determinate")
+        self.__progress__.grid(row=1, sticky = W)
 
+        #defines min and max root dimension
+        self.__installation_root__.update()
+        self.__installation_root__.minsize(self.__installation_root__.winfo_width(), self.__installation_root__.winfo_height())
+        self.__installation_root__.maxsize(self.__installation_root__.winfo_width(), self.__installation_root__.winfo_height())
+        self.__installation_root__.mainloop()
+
+    def __set_ico__(self):
+        """
+        Sets the icon of the installation root
+        :return:
+        """
+        self.__installation_root__.iconbitmap(self.__ico__)
+        self.__installation_root__.wm_iconphoto(True, self.__logo__)
+
+    def __set_title__(self, title):
+        """
+        Sets installation root title
+        :param title: string which contains installation root title
+        :return:
+        """
+        self.__installation_root__.title(title)
+
+    def __get_packages__(self):
+        """
+        Puts into a string all of the libraries required to correctly run aRTi.
+        Libraries names and versions are taken from the requirements.txt file.
+        The test is in the form:
+        pack = "lib_1==#version_1\nlib_2==#version_2\n[...]\nlib_n==version_n\n"
+        :return:
+            A string containing all the Packages required for the installation of aRTi
+        """
+        pack = "\n"
+        with open("requirements.txt", 'r') as f:
+            for line in f:
+                pack = pack + line + "\n"
+        return pack
+
+    def __manage_next_btn__(self):
+        """
+        Enables and Disables the next button in the installation root.
+        If the checkbox value, accept_terms, is set to True the next button is activated.
+        :return:
+        """
+        self.__next_btn__.configure(state="disabled" if not self.__accept_terms__.get() else "normal")
+
+    def __install_libs__(self):
+        """
+        Download and installs required libraries from requirement.txt file
+        :return:
+        """
+        # implement pip as a subprocess:
+        subprocess.run(["pip3", "install", "-r", "requirements.txt"], shell=True, capture_output=True)
+
+    def __import_packs__(self):
+        """
+        Imports needed packages while managing the progress bar
+        :return:
+        """
+        self.__installation_root__.update_idletasks()
+        import os.path
+        self.__progress__["value"] = 76
+        self.__installation_root__.update_idletasks()
+        import PyPDF2
+        self.__progress__["value"] = 87
+        self.__installation_root__.update_idletasks()
+        import docx
+        self.__progress__["value"] = 100
+        self.__installation_root__.update_idletasks()
+
+    def __disable_widgets__(self):
+        """
+        Disables check_btn and next_btn.
+        :return:
+        """
+        self.__check_btn__.configure(state=DISABLED)
+        self.__next_btn__.configure(state=DISABLED)
+
+    def __bar__(self):
+        """
+        Manages the progress bar while installing the required processes and importing
+        required packages.
+        Destroys installation root after installation.
+        :return:
+        """
+        # disable checkbox and next buttons
+        self.__disable_widgets__()
+        # download and install packages
+        self.__progress__["value"] = 5
+        self.__installation_root__.update_idletasks()
+        self.__install_libs__()
+        self.__progress__["value"] = 55
+        self.__import_packs__()
+
+        #destroy the installation root
+        self.__installation_root__.destroy()
+
+#app methods
 def reading_time():
     """
     It makes every computation.
@@ -224,132 +337,11 @@ def __compute_seconds__(dvd):
     return int(str(secs)[2:])
 
 if __name__ == '__main__':
-    try:#TODO
-
-        """
-        installation_root = Tk()
-        logo = PhotoImage(file="utils/images/output-onlinepngtools.png")
-        installation_root.geometry("500x500")
-        installation_root.resizable(0,1)
-        installation_root.title("Program installation")
-        installation_root.iconphoto(False, logo)
-
-
-        frame = Frame(installation_root)
-        #frame.pack_propagate(0)
-        frame.grid(row=0,column=0, sticky = W+E)
-
-        title_label = Label(frame, image = logo, justify = "left")
-
-        title_label.grid(column = 0, row = 0, padx=(10), pady=10)
-
-        infolabel = Label(frame, anchor = "n", font= "arial", text = "Since it is the first execution of the program you need to install the following libraries in order to correctly run ARTI:")
-        infolabel.grid(column = 0, row = 0,padx=(10), pady=10)
-        """
-        installation_root = Tk()
-
-        logo = PhotoImage(file="utils/images/arti2.png")
-        mini_logo = PhotoImage(file="utils/images/arti_medium.png")
-
-        #root.iconphoto(False, logo
-        installation_root.iconbitmap("utils/images/arti2.ico")
-        installation_root.wm_iconphoto(True, logo)
-        installation_root.title("Program Installation")
-
-
-        # Parent widget for the buttons
-        master_frame = Frame(installation_root)
-        master_frame.grid(row=0, column =0)
-
-        dialog_frame = Frame(master_frame)
-        dialog_frame.grid(row=0, sticky= W, padx=(5))#+ E + S)
-
-        image_lbl = Label(dialog_frame, image = mini_logo, justify="center")
-        image_lbl.grid(row=0, column=0,padx=(10), pady=10)#, sticky=N+W)
-
-        welcome_frame = Frame(dialog_frame)
-        welcome_frame.grid(row=0, column =1, sticky=W, padx=(5))
-
-        welcome_lbl = Label(welcome_frame, text='Welcome to aRTi!', font=("Gabriola", 30, "bold"), justify="left")
-        welcome_lbl.grid(row=0, column = 1, sticky = N+W, pady=5)#, sticky=N)
-
-        instruction_lbl = Label(welcome_frame, justify = "left",text='Since it is the first execution of the program you need to download \nand install the following libraries in order to correctly run aRTi.\nPlease make sure to have an internet connection.', font=("Times New Roman", 12))
-        instruction_lbl.grid(row=1, column = 1, sticky = N+W, pady=10)#, sticky=N)
-
-        prova_frame = Frame(master_frame)
-        prova_frame.grid(row=0, column=2)#, sticky=N + W)#+ E + S)
-
-
-
-        # ---------------------------------------------------- BOX Frame
-        box_frame = LabelFrame(master_frame, text="The following packages will be installed:", padx=5, pady=5)
-        box_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky=E + W + N + S)
-
-        installation_root.columnconfigure(0, weight=1)
-        installation_root.rowconfigure(1, weight=1)
-
-        box_frame.rowconfigure(0, weight=1)
-        box_frame.columnconfigure(0, weight=1)
-
-        # Create the textbox
-        txtbox = scrolledtext.ScrolledText(box_frame, width=40, height=10, font=("Times New Roman", 12))
-        txtbox.grid(row=0, column=0, sticky=E + W + N + S)
-        txtbox.insert(INSERT, get_packages())
-        txtbox.configure(state="disabled")
-
-        #-----------------------------------------------accept frame
-        accept_frame = Frame(master_frame)
-        accept_frame.grid(row=2, padx=(10), pady=10, sticky = W)
-
-        accept_terms = BooleanVar()
-
-        # check button
-        check_btn = Checkbutton(accept_frame, text="I accept to download and install the previous packages. Click the 'Next' button to continue", variable=accept_terms, onvalue=True, offvalue=False, command = launch)
-        check_btn.grid(row = 0, sticky = W)
-
-        #next button
-        next_btn = Button(accept_frame, text='Next', state = DISABLED, width=10, command = bar)
-        next_btn.grid(row=2, sticky=E+S, pady=10)
-
-
-        #progress bar
-        progress = ttk.Progressbar(accept_frame, orient=HORIZONTAL, length=600, mode = "determinate")
-        progress.grid(row=1, sticky = W)
-
-        #defines min and max root dimension
-        installation_root.update()
-        installation_root.minsize(installation_root.winfo_width(), installation_root.winfo_height())
-        installation_root.maxsize(installation_root.winfo_width(), installation_root.winfo_height())
-        installation_root.mainloop()
-
-
+    try:
+        install = Installation()
         #reading_time()
-
-
-        #installation_root.mainloop()
     except ModuleNotFoundError:
+        install = Installation()
+        reading_time()
 
-        installation_root = Tk()
 
-        installation_root.geometry("750x250")
-        installation_root.title("Program installation")
-        installation_root.iconphoto(False, PhotoImage(file="utils/images/output-onlinepngtools.png"))
-        installation_root.pack()
-
-        print("Since it is the first execution of the program you need to install the following libraries in order to correctly run ARTI:\n")
-        with open("requirements.txt", 'r') as f:
-            lines = f.readlines()
-            print(lines)
-        choice = input("\nDo you want to proceed with the installation? Type 'Y' to proceed or type any other key to close the process:\t").lower()
-        if choice == 'y':
-        # implement pip as a subprocess:
-            subprocess.run(["pip3", "install", "-r", "requirements.txt"], shell=True, capture_output=True)
-            import os.path
-            import PyPDF2
-            import docx
-            print("\nPackages correctly installed!\n")
-            reading_time()
-            input("\npress any key to exit.")
-        else:
-            print("\nBye! ", "\U0001F984")
-        installation_root.mainloop()
