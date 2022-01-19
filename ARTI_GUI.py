@@ -3,10 +3,6 @@ from tkinter import ttk, scrolledtext, messagebox
 from tkinter import filedialog as fd
 from tkinter.filedialog import asksaveasfile
 
-#TODO 0 time reading
-#TODO manage PDF reading
-#TODO add social buttons
-#TODO add version
 
 # ARTI needs Python three
 # as much as you need... me ;)
@@ -14,6 +10,8 @@ from tkinter.filedialog import asksaveasfile
 # Time's computation function was selected after evaluating the following articles' infos:
 # https://kodify.net/hugo/strings/reading-time-text/
 # https://qualcherisposta.it/quante-parole-si-pronunciano-un-minuto
+
+# last update: 2022/19/01
 
 class Installation:
     """
@@ -203,9 +201,19 @@ class Installation:
         self.__installation_root__.destroy()
 
 class App:
+    """
+    Defines the aRTi GUI.
+    Pressing the "Select File" button the user can simply choose the desired file that has one of the following extentions:
+    - .pdf
+    - .docx
+    - .txt
+    Pressing the "Start" button, the program will compute the reading time of the doc.
+    The game is done.
+    """
     def __init__(self):
         # ------------------------------- Installation root creation
         self.__root__ = Tk()
+        self.__root__.configure(background="#F6FBFF")
         # -----------------logo
         self.__logo__ = PhotoImage(file="utils/images/aRTi_white_giant.png")
         # -----------------logo minimized
@@ -247,12 +255,25 @@ class App:
         self.__instruction_lbl__ = Label(self.__instruction_frame__, justify ="left", text=instructions, font=("Times New Roman", 12), background="#F8FAFC")
         self.__instruction_lbl__.grid(row=0, column = 0, pady=10)
 
-        #-----------------------------------------------Computation frame creation
-        self.__computation_frame__ = LabelFrame(self.__master_frame__,text=" Make your choice: ", padx=5, pady=5, borderwidth = 2, relief = GROOVE, background="#F8FAFC",font=("Bahnschrift Light",10))
-        self.__computation_frame__.grid(row=1, column = 0, padx=(10), pady=10)
+        #-----------------------------------------------File name frame creation
+        self.__fname_frame__ = Frame(self.__master_frame__, padx=5, pady=5, relief = GROOVE, background="#F8FAFC")
+        self.__fname_frame__.grid(row=1, column = 0, padx=(10), pady=10)
 
+        #Reading Time txt label
+        self.__RT_txt__ = Label(self.__fname_frame__,text="Reading Time", background="#F6FBFF",font=("Berlin Sans FB Demi", 30, "bold"), justify="center")
+        self.__RT_txt__.grid(row=0, column=0)
         #file name string
         self.__filename__ = StringVar()
+
+        # Perfomed lbl
+        self.__perf_txt__ = Label(self.__fname_frame__,text="Press 'Select File' button", background="#F6FBFF",font=("Bahnschrift Light",10), justify="center")
+        self.__perf_txt__.grid(row=1, column=0)
+
+        #-----------------------------------------------Computation frame creation
+        self.__computation_frame__ = LabelFrame(self.__fname_frame__,text=" Make your choice: ", padx=5, pady=5, borderwidth = 2, relief = GROOVE, background="#F8FAFC",font=("Bahnschrift Light",10))
+        self.__computation_frame__.grid(row=2, column = 0, padx=(10), pady=10)
+
+
         #reading time value
         self.__reading_time__ = StringVar()
 
@@ -282,7 +303,7 @@ class App:
         #defines min and max root dimension
         self.__root__.update()
         self.__root__.minsize(self.__root__.winfo_width(), self.__root__.winfo_height())
-        self.__root__.maxsize(self.__root__.winfo_width(), self.__root__.winfo_height())
+
 
         self.__root__.mainloop()
 
@@ -296,15 +317,25 @@ class App:
         self.__txt_box__.configure(state="disabled")
         if not self.__file_name__ == "":
             path = self.__file_name__
-            minutes, secs = self.__compute_time__(path)
-            if not (minutes == 0 and secs == 0):
-                #get file name from path
-                file_name = os.path.basename(path)
+            warning = False
+            minutes, secs, warning = self.__compute_time__(path)
+            # get file name from path
+            file_name = os.path.basename(path)
+            if warning:
+                pass
+            elif not (minutes == 0 and secs == 0):
                 #get string containing reading time
                 self.__reading_time__ = "Reading time for " +file_name+" is:\n\n" + str(minutes) + " minutes and " + str(secs) + " seconds.\n\nPlease select another file for a new computation."
                 self.__txt_box__.configure(state=NORMAL)
                 self.__txt_box__.insert(INSERT, self.__reading_time__)
                 self.__txt_box__.configure(state="disabled")
+            else:
+                messagebox.showinfo("Info!", file_name +
+                                       " outputted 0 minutes and 0 seconds.\nReasons maybe one of the following:"
+                                       "\n-\tthe file is empty;"
+                                       "\n-\tthe file contains only images;"
+                                        "\n-\tthe file is corrupted."
+                                        "\n\nSelect another file for a new computation.")
         self.__start_btn__.configure(state="disabled")
 
     def __select_file__(self):
@@ -322,12 +353,11 @@ class App:
 
         #Enables and disables start button
         self.__start_btn__.configure(state = NORMAL if not self.__file_name__ == "" else DISABLED)
+        file_name = os.path.basename(self.__file_name__)
+        #specify doc selected
+        doc_select_rd_txt = "will be computed for\n" + file_name + "\n\nPress 'Start' to continue"
+        self.__perf_txt__.config(text = doc_select_rd_txt if not file_name == "" else "Press 'Select File' button")
 
-        """        
-        showinfo(
-            title = "Selected File",
-            message=file_name
-        )"""
 
 
     def __filetypes__(self):
@@ -412,7 +442,7 @@ class App:
         # creating an object
         file = open(path, 'rb')
         # creating a pdf reader object
-        fileReader = PyPDF2.PdfFileReader(file)
+        fileReader = PyPDF2.PdfFileReader(file,strict=False)
         number_of_words = 0
         for page in fileReader.pages:
             for line in page.extractText().splitlines():
@@ -429,6 +459,7 @@ class App:
             number_of_words: total number of words in the doc
         """
         number_of_words = 0
+        warning = False
 
         try:
             if path.endswith(".txt"):
@@ -437,10 +468,10 @@ class App:
                 number_of_words = self.__getWordNumbDocx__(path)
             elif path.endswith(".pdf"):
                 number_of_words = self.__getWordNumbPDF__(path)
-            return number_of_words
         except:
+            warning = True
             messagebox.showwarning("Warning", "The file you selected maybe protected by password.\nPlease select another file.")
-        return number_of_words
+        return number_of_words, warning
 
 
     def __compute_time__(self, path):
@@ -454,14 +485,13 @@ class App:
         minutes = 0
         secs = 0
 
-        number_of_words = self.__get_number_of_words__(path)
-
-        # 200 = average number of words that can be read in a minute
-        dvd = number_of_words / 200
-        minutes = self.__compute_minutes__(dvd)
-        secs = self.__compute_seconds__(dvd)
-
-        return minutes, secs
+        number_of_words, warning = self.__get_number_of_words__(path)
+        if not warning:
+            # 200 = average number of words that can be read in a minute
+            dvd = number_of_words / 200
+            minutes = self.__compute_minutes__(dvd)
+            secs = self.__compute_seconds__(dvd)
+        return minutes, secs, warning
 
     def __compute_minutes__(self, dvd):
         """
@@ -486,7 +516,6 @@ if __name__ == '__main__':
         import os.path
         import PyPDF2
         import docx
-
         termination = True
     except ModuleNotFoundError:
         install = Installation()
