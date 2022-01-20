@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import ttk, scrolledtext, messagebox
 from tkinter import filedialog as fd
 from tkinter.filedialog import asksaveasfile
-
+import os
+import sys
 
 # ARTI needs Python three
 # as much as you need... me ;)
@@ -25,12 +26,19 @@ class Installation:
         self.__termination__ = False
         # ------------------------------- Installation root creation
         self.__installation_root__ = Tk()
+
+        # path logo
+        logo = __get_path__("utils\\images\\aRTi_white_giant.png")
         # -----------------logo
-        self.__logo__ = PhotoImage(file="utils/images/aRTi_white_giant.png")
+        self.__logo__ = PhotoImage(file=logo)
+        # path logo
+        logo_min = __get_path__("utils\\images\\aRTi_medium.png")
         # -----------------logo minimized
-        self.__mini_logo__ = PhotoImage(file="utils/images/aRTi_medium.png")
+        self.__mini_logo__ = PhotoImage(file=logo_min)
+        # path ico
+        ico = __get_path__("utils\\images\\aRTi_white_giant_ico.ico")
         #-----------------ico
-        self.__ico__ = "utils/images/aRTi_white_giant_ico.ico"
+        self.__ico__ = ico
         #set root icon
         self.__set_ico__()
         #set root title
@@ -214,14 +222,21 @@ class App:
         # ------------------------------- Installation root creation
         self.__root__ = Tk()
         self.__root__.configure(background="#F6FBFF")
+        # path logo
+        logo = __get_path__("utils\\images\\aRTi_white_giant.png")
         # -----------------logo
-        self.__logo__ = PhotoImage(file="utils/images/aRTi_white_giant.png")
+        self.__logo__ = PhotoImage(file=logo)
+        # path logo
+        logo_min = __get_path__("utils\\images\\aRTi_200.png")
         # -----------------logo minimized
-        self.__mini_logo__ = PhotoImage(file="utils/images/aRTi_200.png")
+        self.__mini_logo__ = PhotoImage(file=logo_min)
+        # path ico
+        ico = __get_path__("utils\\images\\aRTi_white_giant_ico.ico")
         #-----------------ico
-        self.__ico__ = "utils/images/aRTi_white_giant_ico.ico"
+        self.__ico__ = ico
         #set root icon
         self.__set_ico__()
+
         #set root title
         self.__title__ = "aRTi"
         self.__set_title__(self.__title__)
@@ -347,7 +362,7 @@ class App:
 
         self.__file_name__ = fd.askopenfilename(
             title = "Select File",
-            initialdir="/",
+            initialdir="\\",
             filetypes = self.__filetypes__()
         )
 
@@ -510,12 +525,28 @@ class App:
         secs = round((dvd * 60) % 1, 3)
         return int(str(secs)[2:])
 
+def __get_path__(relative_path):
+    """
+    if (hasattr(sys, "_MEIPASS")):
+        return os.path.join(sys._MEIPASS, relative_path)
+    else:
+        return relative_path
+    """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
 if __name__ == '__main__':
     termination = False
     try:
         import os.path
         import PyPDF2
         import docx
+
         termination = True
     except ModuleNotFoundError:
         install = Installation()
