@@ -551,7 +551,6 @@ if __name__ == '__main__':
     except ModuleNotFoundError:
         install = Installation()
         termination = install.get_terimantion()
-        termination = True
 
     if termination:
         app = App()
