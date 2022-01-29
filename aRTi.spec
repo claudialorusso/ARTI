@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['ARTI_GUI.py'],
-             pathex=["C:\\[github]ARTI\\ARTI"],
+             pathex=["C:\\aRTi\\ARTI"],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -23,7 +23,7 @@ for d in a.datas:
 		a.datas.remode(d)
 		break
 
-a.datas += [("utils\\images\\aRTi_200.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_200.png","Data"),("utils\\images\\aRTi_giant.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_giant.png","Data"),("utils\\images\\aRTi_ico.ico","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_ico.ico","Data"),("utils\\images\\aRTi_large.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_large.png","Data"),("utils\\images\\aRTi_medium.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_medium.png","Data"),("utils\\images\\aRTi_mini.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_mini.png","Data"),("utils\\images\\aRTi_white_giant.png","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_white_giant.png","Data"),("utils\\images\\aRTi_white_giant_ico.ico","C:\\[github]ARTI\\ARTI\\utils\\images\\aRTi_white_giant_ico.ico","Data")]
+a.datas += [("requirements.txt","C:\\aRTi\\ARTI\\requirements.txt","Data"),("utils\\images\\aRTi_200.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_200.png","Data"),("utils\\images\\aRTi_giant.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_giant.png","Data"),("utils\\images\\aRTi_ico.ico","C:\\aRTi\\ARTI\\utils\\images\\aRTi_ico.ico","Data"),("utils\\images\\aRTi_large.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_large.png","Data"),("utils\\images\\aRTi_medium.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_medium.png","Data"),("utils\\images\\aRTi_mini.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_mini.png","Data"),("utils\\images\\aRTi_white_giant.png","C:\\aRTi\\ARTI\\utils\\images\\aRTi_white_giant.png","Data"),("utils\\images\\aRTi_white_giant_ico.ico","C:\\aRTi\\ARTI\\utils\\images\\aRTi_white_giant_ico.ico","Data")]
 
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
