@@ -27,6 +27,14 @@ class Installation:
         # ------------------------------- Installation root creation
         self.__installation_root__ = Tk()
 
+        width = self.__installation_root__.winfo_screenwidth()
+
+        if width<1680:
+            self.__installation_root__.tk.call("tk", "scaling", 1)
+        if width>2000:
+            self.__installation_root__.tk.call("tk", "scaling", 1.5)
+        self.__installation_root__.update()
+
         # path logo
         logo = __get_path__("utils\\images\\aRTi_white_giant.png")
         # -----------------logo
@@ -221,7 +229,16 @@ class App:
     def __init__(self):
         # ------------------------------- Installation root creation
         self.__root__ = Tk()
-        self.__root__.configure(background="#F6FBFF")
+
+        width = self.__root__.winfo_screenwidth()
+
+        if width<1680:
+            self.__root__.tk.call("tk", "scaling", 1)
+        if width>2000:
+            self.__root__.tk.call("tk", "scaling", 1.5)
+        self.__root__.update()
+
+        self.__root__.configure(background="white")
         # path logo
         logo = __get_path__("utils\\images\\aRTi_white_giant.png")
         # -----------------logo
@@ -241,69 +258,100 @@ class App:
         self.__title__ = "aRTi"
         self.__set_title__(self.__title__)
         #---------------------------------- Master frame creation
-        self.__master_frame__ = Frame(self.__root__, background="#F6FBFF")#F6ECEC
-        self.__master_frame__.grid(row=0)
+        self.__master_frame__ = Frame(self.__root__, background="white")#F6ECEC
+        self.__master_frame__.grid(row=0, sticky=W+N)
         #---------------------------------- Dialog Frame creation
-        self.__up_dialog_frame__ = Frame(self.__master_frame__, background="#F6FBFF")
-        self.__up_dialog_frame__.grid(padx=(10), pady=10)
+        self.__up_dialog_frame__ = Frame(self.__master_frame__, background="white")
+        self.__up_dialog_frame__.grid(padx=(10), pady=10, sticky=W+N)
         #---------------------------------- Image lbl
-        self.__image_lbl__ = Label(self.__up_dialog_frame__, image = self.__mini_logo__, background="#F6FBFF")
-        self.__image_lbl__.grid(row=0, column = 0, padx=(10), pady=10)
+        self.__image_lbl__ = Label(self.__up_dialog_frame__, image = self.__mini_logo__, background="white")
+        self.__image_lbl__.grid(row=1, column = 0, padx=(10), sticky = N)
 
         #---------------------------------- clolorusso label
-        self.__clo_lbl__ = Label(self.__up_dialog_frame__, text ="  by clolorusso", background="#F6FBFF",font=("Bahnschrift Light",10))
-        self.__clo_lbl__.grid(row=1, column = 0, sticky = N)
+        self.__clo_lbl__ = Label(self.__up_dialog_frame__, text ="  by clolorusso\n\n\n\n", background="white",font=("Bahnschrift Light",10))
+        self.__clo_lbl__.grid(row=2, column = 0, sticky = N)
+
+        self.__right_frame__ =  Frame(self.__master_frame__, borderwidth = 2,background="#F8FAFC")
+        self.__right_frame__.grid(row=0, column=1, sticky=W, padx=(10), pady=10)
+
+
         #---------------------------------- Instruction Frame creation
-        self.__instruction_frame__ = Frame(self.__master_frame__, relief = RIDGE, borderwidth = 2,background="#F8FAFC")
-        self.__instruction_frame__.grid(row=0, column = 1, sticky=W, padx=(10), pady=10)
+        self.__instruction_frame__ = Frame(self.__right_frame__, borderwidth = 2,background="#F8FAFC")
+        self.__instruction_frame__.grid(row=0, column = 0, sticky=W, padx=(10), pady=10)
         #---------------------------------- Instruction lbl
 
-        str_bold_reading_time = "\033[1m" + "reading time" + "\033[0m"
-        str_bold_aRTi = "\033[1m" + "aRTi" + "\033[0m"
+        title_arti = "_____ aR"+u'\u231B' +"Ti _____"
+        # path logo
+        arti_line = __get_path__("utils\\images\\aRTi_lines_700x58.png")
+        # -----------------logo minimized
+        self.__arti_line__ = PhotoImage(file=arti_line)
+
+        Label(self.__instruction_frame__, justify ="left", image = self.__arti_line__,text=title_arti, font=("Berlin Sans FB Demi", 60, "bold"), background="#F8FAFC").grid(row=0, column = 0, sticky=W)
+
         instructions = "Howdy Guys!!!\n\nSeems like you're in a desperate need for help or else " \
                        "you'd have never downloaded \nand installed a program retrieved from a " \
                        "remote corner of GitHub...\n\nAnyway, aRTi is here to HELP YOU!!\n\n" \
                        "Are you interested in discovering the READING TIME of your speech or a book?\n" \
-                       "You just have to select the doc ('.txt','.docx' or '.pdf' only) by clicking the " \
+                       "You just have to select the doc ('.txt', '.docx' or '.pdf' only) by clicking the " \
                        "'Select File' \nbutton. Afterwards, press 'Start' and the game is done."
 
-        self.__instruction_lbl__ = Label(self.__instruction_frame__, justify ="left", text=instructions, font=("Times New Roman", 12), background="#F8FAFC")
-        self.__instruction_lbl__.grid(row=0, column = 0, pady=10)
+        Label(self.__instruction_frame__, justify ="left", text=instructions, font=("Bahnschrift Light", 12), background="#F8FAFC").grid(row=1, column = 0, sticky = W)
 
-        #-----------------------------------------------File name frame creation
-        self.__fname_frame__ = Frame(self.__master_frame__, padx=5, pady=5, relief = GROOVE, background="#F8FAFC")
-        self.__fname_frame__.grid(row=1, column = 0, padx=(10), pady=10)
+        # Perfomed lbl
+        Label(self.__instruction_frame__,text="Instructions:", background="#F6FBFF",font=("Berlin Sans FB Demi",16), justify="left").grid(row=2, column=0, pady = 10, sticky = W)
 
-        #Reading Time txt label
-        self.__RT_txt__ = Label(self.__fname_frame__,text="Reading Time", background="#F6FBFF",font=("Berlin Sans FB Demi", 30, "bold"), justify="center")
-        self.__RT_txt__.grid(row=0, column=0)
-        #file name string
+
         self.__filename__ = StringVar()
 
         # Perfomed lbl
-        self.__perf_txt__ = Label(self.__fname_frame__,text="Press 'Select File' button", background="#F6FBFF",font=("Bahnschrift Light",10), justify="center")
-        self.__perf_txt__.grid(row=1, column=0)
+        self.__perf_txt__ = Label(self.__instruction_frame__,text="Press 'Select File' button and choose your file.", background="#F6FBFF",font=("Bahnschrift Light",12), justify="left")
+        self.__perf_txt__.grid(row=3, column=0, pady = 5, sticky = W)
+
+
+        #-----------------------------------------------File name frame creation
+        self.__fname_frame__ = Frame(self.__up_dialog_frame__, padx=5, pady=5, relief = GROOVE, background="white")
+        self.__fname_frame__.grid(row=0, column = 0, padx=(10), sticky = S)
+
+
+        #EMPTY
+        #Label(self.__fname_frame__,text="", background="white",font=("Bahnschrift Light",10), justify="center").grid(row=0, column=0, sticky = S, pady = 60)
+
+        # Compute your
+        Label(self.__fname_frame__,text="\n\nCompute your", background="white",font=("Berlin Sans FB Demi",12, "bold"), justify="center").grid(row=0, column=0, sticky = S)
+
+
+        #Reading Time txt label
+        self.__RT_txt__ = Label(self.__fname_frame__,text="Reading Time", background="white",font=("Berlin Sans FB Demi", 30, "bold"), justify="center")
+        self.__RT_txt__.grid(row=1, column=0, sticky = S)
+        #file name string
+
+        # with
+        Label(self.__fname_frame__,text="with\n\n\n", background="white",font=("Berlin Sans FB Demi",12, "bold"), justify="center").grid(row=2, column=0, sticky = S)
+
+        #EMPTY
+        #Label(self.__fname_frame__,text="", background="white",font=("Bahnschrift Light",10), justify="center").grid(row=5, column=0, sticky = S, pady = 5)
 
         #-----------------------------------------------Computation frame creation
-        self.__computation_frame__ = LabelFrame(self.__fname_frame__,text=" Make your choice: ", padx=5, pady=5, borderwidth = 2, relief = GROOVE, background="#F8FAFC",font=("Bahnschrift Light",10))
-        self.__computation_frame__.grid(row=2, column = 0, padx=(10), pady=10)
+        self.__computation_frame__ = LabelFrame(self.__up_dialog_frame__,text="\n                  Make your choice: ", padx=5, pady=5, borderwidth = 0.4, relief = GROOVE, background="#F6FBFF",font=("Berlin Sans FB Demi",12, "bold"))
+        self.__computation_frame__.grid(row=3, column = 0, padx=(10), pady=5, sticky = S)
 
 
         #reading time value
         self.__reading_time__ = StringVar()
 
+        button_color = "#E1F3FF"
 
         #Select file button
-        self.__select_btn__ = Button(self.__computation_frame__, text ="Select File", width=10,command = self.__select_file__, background="#BCDBF7")
-        self.__select_btn__.grid(row=0, column = 0, padx=10,pady=10, sticky = E+N)
+        self.__select_btn__ = Button(self.__computation_frame__, text ="Select File", height = 2, width=15,command = self.__select_file__, background=button_color,borderwidth=1, relief = SUNKEN,cursor="hand2",font=("Bahnschrift Light",10))
+        self.__select_btn__.grid(row=0, column = 0, padx=10,pady=10, sticky = E+N+S)
 
         # start button
-        self.__start_btn__ = Button(self.__computation_frame__, text ="Start", state = DISABLED, width=10, command = self.__compute__, background="#BCDBF7")
-        self.__start_btn__.grid(row=0, column = 1, padx=10,pady=10, sticky=W+N)
+        self.__start_btn__ = Button(self.__computation_frame__, text ="Start", state = DISABLED,  height = 2, width=15, command = self.__compute__, background=button_color,borderwidth=1, relief = SUNKEN,cursor="arrow",font=("Bahnschrift Light",10))
+        self.__start_btn__.grid(row=0, column = 1, padx=10,pady=10, sticky=W+N+S)
 
         # ---------------------------------------------------- TEXTBOX Frame
-        self.__box_frame__ = LabelFrame(self.__master_frame__, text="Reading time is:", padx=5, pady=5, background="#F6FBFF",font=("Bahnschrift Light",10))
-        self.__box_frame__.grid(row=1, column=1, columnspan=3, padx=10, pady=10, sticky=E + W + N + S)
+        self.__box_frame__ = LabelFrame(self.__right_frame__, text=" Reading time is:", padx=5, pady=5, borderwidth=0.4,background="#F6FBFF",font=("Berlin Sans FB Demi",12))
+        self.__box_frame__.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky=E + W + N + S)
 
         self.__root__.columnconfigure(0, weight=1)
         self.__root__.rowconfigure(1, weight=1)
@@ -312,7 +360,7 @@ class App:
         self.__box_frame__.columnconfigure(0, weight=1)
 
         # Create the textbox widget
-        self.__txt_box__ = scrolledtext.ScrolledText(self.__box_frame__, width=40, height=10, font=("Times New Roman", 12), state = DISABLED)
+        self.__txt_box__ = Text(self.__box_frame__, width=40, height=10, font=("Bahnschrift Light", 12), state = DISABLED, cursor = "arrow")
         self.__txt_box__.grid(row=0, column=0, sticky=E + W + N + S)
 
         #defines min and max root dimension
@@ -351,7 +399,8 @@ class App:
                                        "\n-\tthe file contains only images;"
                                         "\n-\tthe file is corrupted."
                                         "\n\nSelect another file for a new computation.")
-        self.__start_btn__.configure(state="disabled")
+        self.__start_btn__.configure(state="disabled", cursor="arrow")
+        self.__perf_txt__.config(text= "Press 'Select File' button and choose your file for a new computation.")
 
     def __select_file__(self):
         """
@@ -367,11 +416,11 @@ class App:
         )
 
         #Enables and disables start button
-        self.__start_btn__.configure(state = NORMAL if not self.__file_name__ == "" else DISABLED)
+        self.__start_btn__.configure(state = NORMAL if not self.__file_name__ == "" else DISABLED,  cursor="hand2" if not self.__file_name__ == "" else "arrow")
         file_name = os.path.basename(self.__file_name__)
         #specify doc selected
-        doc_select_rd_txt = "will be computed for\n" + file_name + "\n\nPress 'Start' to continue"
-        self.__perf_txt__.config(text = doc_select_rd_txt if not file_name == "" else "Press 'Select File' button")
+        doc_select_rd_txt = "Reading time will be computed for\n" + file_name + "\n\nPress 'Start' to continue"
+        self.__perf_txt__.config(text = doc_select_rd_txt if not file_name == "" else "Press 'Select File' button and choose your file.")
 
 
 
@@ -382,9 +431,9 @@ class App:
         tuple of all of the filetypes allowed
         """
         filetypes = (
+            ("*.pdf", "*.pdf"),
             ("*.txt", "*.txt"),
-            ("*.docx", "*.docx"),
-            ("*.pdf", "*.pdf")
+            ("*.docx", "*.docx")
         )
         return filetypes
 
@@ -405,18 +454,6 @@ class App:
         self.__root__.title(title)
 
     #app methods
-
-    def __ask_path__(self):
-        """
-        Asks the user for the path's file
-        :return:
-            path: path of the file
-        """
-        exists = False
-        path = ""
-        while not exists:
-            path, exists = __check_file__()
-        return path
 
     def __getWordNumbTxt__(self, path):
         """
@@ -454,6 +491,7 @@ class App:
         :return:
             number_of_words: total of words in the doc.
         """
+        import PyPDF2
         # creating an object
         file = open(path, 'rb')
         # creating a pdf reader object
@@ -483,7 +521,7 @@ class App:
                 number_of_words = self.__getWordNumbDocx__(path)
             elif path.endswith(".pdf"):
                 number_of_words = self.__getWordNumbPDF__(path)
-        except:
+        except Exception as e:
             warning = True
             messagebox.showwarning("Warning", "The file you selected maybe protected by password.\nPlease select another file.")
         return number_of_words, warning
@@ -541,6 +579,10 @@ def __get_path__(relative_path):
 
 
 if __name__ == '__main__':
+
+    # use this for CLI execution
+    # to export exe comment this and
+    # delete comment from bottom code
     termination = False
     try:
         import os.path
@@ -554,4 +596,7 @@ if __name__ == '__main__':
 
     if termination:
         app = App()
-
+    """
+    # Pyinstaller needs only this
+    app = App()
+    """
